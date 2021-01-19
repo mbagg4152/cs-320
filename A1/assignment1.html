@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Maggie Horton CS-320 Assignment 1</title>
+    <style>
+        div {
+            align-self: center;
+            align-content: center;
+            align-items: center;
+            display: inline-block;
+            padding: 50px 200px 200px;
+            border: 2px black;
+
+        }
+
+        canvas {
+            display: inline;
+            margin: 0;
+            padding: 0;
+            width: 300px;
+            height: 150px;
+        }
+
+        h2, h3, h4 {
+            font-family: "Droid Sans", sans-serif;
+            color: darkslategray;
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+<h2>CS-320 Assignment 1</h2>
+<h3>Maggie Horton</h3>
+<h3>Winter 2020</h3>
+
+<div>
+    <canvas id="shape1"></canvas>
+    <canvas id="shape2"></canvas>
+    <canvas id="shape3"></canvas>
+    <canvas id="shape4"></canvas>
+</div>
+
+<div>
+    <canvas id="shape5"></canvas>
+    <canvas id="shape6"></canvas>
+    <canvas id="shape7"></canvas>
+    <canvas id="shape8"></canvas>
+</div>
+
+<script>
+    function elem(id) {return document.getElementById(id);}
+
+    const BLU = '#00385f', GRN = '#005729', IND = '#180082', ORN = '#FF4500', PUR = '#4f0080', RED = '#8B0000',
+        YEL = '#DAA520';
+
+    // get shapes
+    let s1 = elem('shape1'), s2 = elem('shape2'), s3 = elem('shape3'), s4 = elem('shape4'), s5 = elem('shape5'),
+        s6 = elem('shape6'), s7 = elem('shape7'), s8 = elem('shape8');
+
+    // get contexts
+    let circle = s1.getContext('2d'), tri = s2.getContext('2d'), square = s3.getContext('2d'),
+        diamond = s4.getContext('2d'), pent = s5.getContext('2d'), hex = s6.getContext('2d'),
+        hept = s7.getContext('2d'), oct = s8.getContext('2d');
+
+    let sqX = 0, sqY = 0, heptDX = -40, heptDY = -40, octDX = -30, octDY = -30;
+    let circCount = 0, triCount = 0, heptCount = 0, diCount = 0, hexCount = 0, pentCount = 0, octCount = 0;
+
+    setInterval(moveCircle, 600);
+    setInterval(moveTriangle, 800);
+    setInterval(moveSquare, 50);
+    setInterval(moveDiamond, 555);
+    setInterval(movePentagon, 300);
+    setInterval(moveHexagon, 400);
+    setInterval(moveHeptagon, 60);
+    setInterval(moveOctagon, 30);
+
+
+    function moveCircle() {
+        circle.clearRect(0, 0, s1.width, s1.height)
+        if ((circCount % 3) === 0) {
+            drawCircle(circle, 65, 50, 50, 0, (2 * Math.PI), RED);
+        } else if ((circCount % 5) === 0) {
+            drawCircle(circle, 65, 55, 50, 0, (2 * Math.PI), RED);
+        } else if ((circCount % 2) === 0) {
+            drawCircle(circle, 50, 50, 50, 0, (2 * Math.PI), RED);
+        } else {
+            drawCircle(circle, 75, 75, 50, 0, (2 * Math.PI), RED);
+        }
+        circCount++;
+        if (circCount === 100) circCount = 0;
+    }
+
+    function moveTriangle() {
+        let triX = [20, 70, 120], triY = [120, 20, 120];
+        tri.clearRect(0, 0, s2.width, s2.height);
+        if (triCount === 0) {
+            drawPoly(tri, [0, 50, 100], [100, 0, 100], ORN, 0, 0);
+        } else {
+            if ((triCount % 9) === 0) {
+                drawPoly(tri, triX, triY, ORN, -9, 9);
+            } else if ((triCount % 7) === 0) {
+                drawPoly(tri, triX, triY, ORN, 7, -7);
+            } else if ((triCount % 5) === 0) {
+                drawPoly(tri, triX, triY, ORN, -5, -5);
+            } else if ((triCount % 2) === 0) {
+                drawPoly(tri, triX, triY, ORN, 2, -2);
+            } else {
+                drawPoly(tri, triX, triY, ORN, 10, -8);
+            }
+        }
+        triCount++;
+        if (triCount === 40) triCount = 0;
+    }
+
+    function moveSquare() {
+        square.clearRect(0, 0, s3.width, s3.height);
+        sqX += 1;
+        sqY += 1;
+        if (sqX === 50) sqX = 0;
+        if (sqY === 50) sqY = 0;
+        drawSquare(square, sqX, sqY, 100, 100, YEL);
+    }
+
+    function moveDiamond() {
+        diamond.clearRect(0, 0, s4.width, s4.height);
+
+        let diX = [40, 90, 140, 90], diY = [90, 40, 90, 140];
+        if (diCount === 0) {
+            drawPoly(diamond, diX, diY, GRN, 0, 0);
+        } else {
+            if ((diCount % 7) === 0) {
+                drawPoly(diamond, diX, diY, GRN, -19, 4);
+            } else if ((diCount % 6) === 0) {
+                drawPoly(diamond, diX, diY, GRN, 12, -3);
+            } else if ((diCount % 5) === 0) {
+                drawPoly(diamond, diX, diY, GRN, -9, -3);
+            } else if ((diCount % 2) === 0) {
+                drawPoly(diamond, diX, diY, GRN, 1, -8);
+            } else {
+                drawPoly(diamond, diX, diY, GRN, 4, -3);
+            }
+        }
+        diCount++;
+        if (diCount === 25) diCount = 25;
+    }
+
+    function movePentagon() {
+        pent.clearRect(0, 0, s5.width, s5.height);
+        let pentX = [40, 90, 140, 120, 60], pentY = [80, 40, 80, 140, 140];
+
+        if (pentCount === 0) {
+            drawPoly(pent, pentX, pentY, BLU, 0, 0);
+        } else {
+            if ((pentCount % 5) === 0) {
+                drawPoly(pent, pentX, pentY, BLU, -2, 5);
+            } else if ((pentCount % 8) === 0) {
+                drawPoly(pent, pentX, pentY, BLU, 8, -8);
+            } else if ((pentCount % 3) === 0) {
+                drawPoly(pent, pentX, pentY, BLU, -6, -3);
+            } else if ((pentCount % 2) === 0) {
+                drawPoly(pent, pentX, pentY, BLU, 8, -2);
+            } else {
+                drawPoly(pent, pentX, pentY, BLU, 9, -7);
+            }
+        }
+        pentCount++;
+        if (pentCount === 80) pentCount = 0;
+    }
+
+    function moveHexagon() {
+        hex.clearRect(0, 0, s6.width, s6.height);
+        let hexX = [40, 90, 140, 140, 90, 40], hexY = [65, 40, 65, 115, 140, 115];
+        if (hexCount === 0) {
+            drawPoly(hex, hexX, hexY, IND, 0, 0);
+        } else {
+            if ((hexCount % 10) === 0) {
+                drawPoly(hex, hexX, hexY, IND, -20, 8);
+            } else if ((hexCount % 4) === 0) {
+                drawPoly(hex, hexX, hexY, IND, 7, -4);
+            } else if ((hexCount % 5) === 0) {
+                drawPoly(hex, hexX, hexY, IND, -10, -15);
+            } else if ((hexCount % 2) === 0) {
+                drawPoly(hex, hexX, hexY, IND, 2, -2);
+            } else {
+                drawPoly(hex, hexX, hexY, IND, 10, -8);
+            }
+        }
+        hexCount++;
+        if (triCount === 70) triCount = 0;
+    }
+
+    function moveHeptagon() {
+        hept.clearRect(0, 0, s7.width, s7.height);
+        let heptX = [40, 50, 90, 130, 140, 115, 65], heptY = [105, 60, 40, 60, 105, 140, 140];
+        if (heptCount === 0) {
+            drawPoly(hept, heptX, heptY, PUR, 0, 0)
+        } else {
+            if (heptCount === 40) {
+                heptCount = 0;
+                heptDX = -40;
+                heptDY = -40;
+                drawPoly(hept, heptX, heptY, PUR, 0, 0)
+            } else {
+                drawPoly(hept, heptX, heptY, PUR, heptDX, heptDY);
+                heptDX += 1;
+                heptDY += 1;
+
+            }
+        }
+        heptCount++;
+    }
+
+    function moveOctagon() {
+        oct.clearRect(0, 0, s8.width, s8.height);
+        let octX = [30, 45, 80, 115, 130, 115, 80, 45], octY = [80, 45, 30, 45, 80, 115, 130, 115];
+        if (octCount === 0) {
+            drawPoly(oct, octX, octY, 'black', 0, 0)
+        } else {
+            if (octCount === 30) {
+                octCount = 0;
+                octDX = -30;
+                octDY = -30;
+                drawPoly(oct, octX, octY, 'black', 0, 0)
+            } else {
+                drawPoly(oct, octX, octY, 'black', octDX, octDY);
+                octDX += 1;
+                octDY += 1;
+            }
+        }
+        octCount++;
+    }
+
+    function drawSquare(sq, x, y, w, h, color) {
+        sq.fillStyle = color;
+        sq.fillRect(x, y, w, h);
+    }
+
+    function drawCircle(circ, x, y, rad, start, end, color) {
+        circ.fillStyle = color;
+        circ.beginPath();
+        circ.arc(x, y, rad, start, end);
+        circ.fill();
+
+    }
+
+    function drawPoly(poly, coordsX, coordsY, color, diffX, diffY) {
+        poly.fillStyle = color;
+        poly.beginPath();
+        for (let i = 0; i < coordsX.length; i++) {
+            coordsX[i] += diffX;
+            coordsY[i] += diffY;
+        }
+        poly.moveTo(coordsX[0], coordsY[0]);
+        for (let i = 1; i < coordsX.length; i++) {
+            poly.lineTo(coordsX[i], coordsY[i]);
+        }
+        poly.fill();
+    }
+    
+
+</script>
+</body>
+</html>
