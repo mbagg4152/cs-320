@@ -1,41 +1,19 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <title>Assignment 2</title>
-    <style>
-        canvas {
-            border: 1px solid #000000;
-            width: 700px;
-            height: 700px;
-        }
-    </style>
-</head>
-
-<body>
-<div>
-    <canvas id="main_canvas">
-        Please use a browser compatible with Canvas.
-    </canvas>
-</div>
-<script src="lib/webgl-utils.js"></script> <!--Include webgl util code-->
-<script>
-    let canvas = document.getElementById('main_canvas');
-    let context = canvas.getContext('2d');
-    let click_x, click_y;
-
-
-    canvas.addEventListener('click',
-        function (left_click) {
-            click_x = left_click.clientX;
-            click_y = left_click.clientY;
-            alert('x: ' + click_x + ' y: ' + click_y);
-        }, false);
-
-    canvas.addEventListener('contextmenu',
-        function (right_click) {
-            right_click.preventDefault();
-            alert('That was a right click oh my god');
-        }, false);
-</script>
-</body>
+    <head>
+        <title>Assignment 2</title>
+        <link rel="stylesheet" href="lib/a2.css">
+    </head>
+    
+    <body>
+        <h3 id="head_xy">(x,y)</h3>
+        <h3 id="head_left">left click count: 0</h3>
+        <h3 id="head_right">right click count: 0</h3>
+        <canvas id="main_canvas">
+            Please use a browser compatible with Canvas.
+        </canvas>
+        <script src="lib/webgl-utils.js"></script> <!--Include webgl util code-->
+        <script src="lib/webgl-debug.js"></script>
+        <script src="lib/a2.js"></script>
+    </body>
 </html>
