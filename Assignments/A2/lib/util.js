@@ -1,8 +1,4 @@
-/** ERRATA: 'cancelRequestAnimationFrame' renamed to 'cancelAnimationFrame' to reflect an update to the W3C Animation-
- * Timing Spec.
- * Cancels an animation frame request.
- * Checks for cross-browser support, falls back to clearTimeout.
- * @param {number}  Animation frame request. **/
+/* THIS IS THE UTIL FILE PROVIDED BY THE BOOK */
 if (!window.cancelAnimationFrame) {
     window.cancelAnimationFrame = (window.cancelRequestAnimationFrame ||
         window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
@@ -11,15 +7,9 @@ if (!window.cancelAnimationFrame) {
         window.oCancelAnimationFrame || window.oCancelRequestAnimationFrame ||
         window.clearTimeout);
 }
-/**
- * Create a program object and make current
- * @param gl GL context
- * @param vshader a vertex shader program (string)
- * @param fshader a fragment shader program (string)
- * @return true, if the program object was created and successfully made current
- */
+
 function initShaders(gl, vshader, fshader) {
-    var program = createProgram(gl, vshader, fshader);
+    let program = createProgram(gl, vshader, fshader);
     if (!program) {
         console.log('Failed to create program');
         return false;
@@ -31,38 +21,26 @@ function initShaders(gl, vshader, fshader) {
     return true;
 }
 
-/**
- * Create the linked program object
- * @param gl GL context
- * @param vshader a vertex shader program (string)
- * @param fshader a fragment shader program (string)
- * @return created program object, or null if the creation has failed
- */
 function createProgram(gl, vshader, fshader) {
-    // Create shader object
-    var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vshader);
-    var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fshader);
+    let vertexShader = loadShader(gl, gl.VERTEX_SHADER, vshader); // Create shader object
+    let fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fshader); // Create shader object
     if (!vertexShader || !fragmentShader) {
         return null;
     }
 
-    // Create a program object
-    var program = gl.createProgram();
+    let program = gl.createProgram(); // Create a program object
     if (!program) {
         return null;
     }
 
-    // Attach the shader objects
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
+    gl.attachShader(program, vertexShader); // Attach shader object
+    gl.attachShader(program, fragmentShader); // Attach shader object
 
-    // Link the program object
-    gl.linkProgram(program);
+    gl.linkProgram(program); // Link the program object
 
-    // Check the result of linking
-    var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+    let linked = gl.getProgramParameter(program, gl.LINK_STATUS); // Check the result of linking
     if (!linked) {
-        var error = gl.getProgramInfoLog(program);
+        let error = gl.getProgramInfoLog(program);
         console.log('Failed to link program: ' + error);
         gl.deleteProgram(program);
         gl.deleteShader(fragmentShader);
@@ -72,46 +50,31 @@ function createProgram(gl, vshader, fshader) {
     return program;
 }
 
-/**
- * Create a shader object
- * @param gl GL context
- * @param type the type of the shader object to be created
- * @param source shader program (string)
- * @return created shader object, or null if the creation has failed.
- */
 function loadShader(gl, type, source) {
-    // Create shader object
-    var shader = gl.createShader(type);
+    let shader = gl.createShader(type); // Create shader object
     if (shader == null) {
         console.log('unable to create shader');
         return null;
     }
 
-    // Set the shader program
-    gl.shaderSource(shader, source);
+    gl.shaderSource(shader, source); // Set the shader program
+    gl.compileShader(shader); // Compile the shader
 
-    // Compile the shader
-    gl.compileShader(shader);
-
-    // Check the result of compilation
-    var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    let compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS); // Check the result of compilation
     if (!compiled) {
-        var error = gl.getShaderInfoLog(shader);
+        let error = gl.getShaderInfoLog(shader);
         console.log('Failed to compile shader: ' + error);
         gl.deleteShader(shader);
         return null;
     }
-
     return shader;
 }
 
 function getWebGLContext(canvas, opt_debug) {
-    // Get the rendering context for WebGL
-    var gl = WebGLUtils.setupWebGL(canvas);
+    let gl = WebGLUtils.setupWebGL(canvas);  // Get the rendering context for WebGL
     if (!gl) return null;
 
-    // if opt_debug is explicitly false, create the context for debugging
-    if (arguments.length < 2 || opt_debug) {
+    if (arguments.length < 2 || opt_debug) { // if opt_debug is explicitly false, create the context for debugging
         gl = WebGLDebugUtils.makeDebugContext(gl);
     }
 
