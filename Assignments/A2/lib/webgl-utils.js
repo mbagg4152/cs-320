@@ -58,9 +58,8 @@ WebGLUtils = function () {
     /** Creates a webgl context. If creation fails it will change the contents of the container of the <canvas> tag to
      ** an error message with the correct links for WebGL.
      ** @param {Element} canvas. The canvas element to create a context from.
-     ** @param {WebGLContextCreationAttributes} opt_attribs Any creation attributes you want to pass in.
      ** @return {WebGLRenderingContext} The created context. **/
-    var setupWebGL = function (canvas, opt_attribs) {
+    var setupWebGL = function (canvas) {
         function showLink(str) {
             var container = canvas.parentNode;
             if (container) {
@@ -73,7 +72,7 @@ WebGLUtils = function () {
             return null;
         }
 
-        var context = create3DContext(canvas, opt_attribs);
+        var context = create3DContext(canvas, false);
         if (!context) {
             showLink(OTHER_PROBLEM);
         }
@@ -113,16 +112,3 @@ window.requestAnimFrame = (function () {
         };
 })();
 
-/** ERRATA: 'cancelRequestAnimationFrame' renamed to 'cancelAnimationFrame' to reflect an update to the W3C Animation-
- * Timing Spec.
- * Cancels an animation frame request.
- * Checks for cross-browser support, falls back to clearTimeout.
- * @param {number}  Animation frame request. **/
-if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = (window.cancelRequestAnimationFrame ||
-        window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
-        window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame ||
-        window.msCancelAnimationFrame || window.msCancelRequestAnimationFrame ||
-        window.oCancelAnimationFrame || window.oCancelRequestAnimationFrame ||
-        window.clearTimeout);
-}
