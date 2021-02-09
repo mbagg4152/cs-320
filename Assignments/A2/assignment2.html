@@ -1,23 +1,26 @@
 <!--Maggie Horton Winter 2021-->
+<!--MAKE SURE TO CHANGE IDs-->
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Assignment 2</title>
-        <link rel="stylesheet" href="lib/a2.css">
+        <title>Assignment 2</title> <!--change-->
+        <link rel="stylesheet" href="lib/a2.css"> <!--You can just throw away the whole ass css file it doesnt matter.
+                                                      also maybe do embedded css up here or just go w/ the simple
+                                                      inline css shit-->
     </head>
     
     <body onload="main()">
-        <h1>Note: The first point doesn't show up so remember where you click!</h1>
+        <h1>Note: The first point doesn't show up so remember where you click!</h1> <!--dont need this-->
         <div>
-            <button type="button" id="color_btn">Change the color!</button>
-            <label for="color_picker" id="color_lbl" style="display: none">Pick Here! >> </label>
+            <button type="button" id="color_btn">Change the color!</button> <!--probably dont need this?-->
+            <label for="color_picker" id="color_lbl" style="display: none">Pick Here! >> </label><!--dont need this-->
             <input type="color" id="color_picker" style="display: none">
         </div>
-        <canvas id="main_canvas" width="1200" height="700">
-            Please use a browser compatible with Canvas.
+        <canvas id="main_canvas" width="1200" height="700"><!--change size pls-->
+            Please use a browser compatible with Canvas. <!--change-->
         </canvas>
-        <script src="lib/webgl-utils.js"></script>
-        <script src="lib/webgl-debug.js"></script>
+        <script src="lib/webgl-utils.js"></script> <!-- use the original webgl-utils i formatted mine -->
+        <script src="lib/webgl-debug.js"></script> <!-- use the original webgl-debug i formatted mine -->
         <script src="lib/util.js"></script>
         <script src="lib/a2.js"></script>
     </body>
