@@ -8,6 +8,7 @@
 
 // TODO - just write these bad boys using regular string concatenation or smth im just a particular bitch and thought it was ugly
 // TODO - also the shaders dont need to be in screaming snake case do w/e u want
+// TODO - pls change attribute/uniform names. vars w/prefix gl_cannot be changed
 let SRC_VERT = code_lines(['attribute vec4 a_pos;',
                            'void main(){',
                            '    gl_Position = a_pos;',
@@ -69,10 +70,11 @@ function main() {
 
 function init_webgl() { // set up webgl context, shaders, etc. and make sure program is loaded
     // TODO - prob dont need try-catch
+    
     try { wgl_ctx = getWebGLContext(canvas); } catch (e) { alert('ERR - WEBGL CONTEXT'); }
-    try { initShaders(wgl_ctx, SRC_VERT, SRC_FRAG); } catch (e) { alert('ERR - SHADERS'); }
-    try { attr_pos = wgl_ctx.getAttribLocation(wgl_ctx.program, 'a_pos'); } catch (e) { alert('ERR - POS'); }
-    try { attr_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'l_color'); } catch (e) { alert('ERR - COLOR'); }
+    try { initShaders(wgl_ctx, SRC_VERT, SRC_FRAG); } catch (e) { alert('ERR - SHADERS'); } 
+    try { attr_pos = wgl_ctx.getAttribLocation(wgl_ctx.program, 'a_pos'); } catch (e) { alert('ERR - POS'); } // TODO - change name to whatever name is used in the shader
+    try { attr_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'l_color'); } catch (e) { alert('ERR - COLOR'); } // TODO - change name to whatever name is used in the shader
 }
 
 function register_events() { // register events for canvas, button and color picker
