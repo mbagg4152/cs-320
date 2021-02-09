@@ -8,8 +8,9 @@ function elem(id) { return document.getElementById(id); } // rename function to 
 
 function code_lines(lines) { return lines.join('\n'); } // join code lines by \n, more readable
 
-function update_canvas(gl, points, a_pos, count) { // take points from mouse click and add to canvas
+function update_canvas(gl, points, a_pos, count, l_color, c_val) { // take points from mouse click and add to canvas
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform4f(l_color, c_val[0], c_val[1], c_val[2], c_val[3]);
     if (count === 1) { // need to draw start point of line
         gl.vertexAttrib3f(a_pos, points[0], points[1], 0.0);
         gl.drawArrays(gl.POINTS, 0, 1);
