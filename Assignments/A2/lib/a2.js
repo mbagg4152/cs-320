@@ -3,60 +3,73 @@
  ********************************************************/
 let SRC_VERT = code_lines(['attribute vec4 a_pos;',
                            'void main(){',
-                           '  gl_Position = a_pos;',
-                           '  gl_PointSize = 2.0;',
+                           '    gl_Position = a_pos;',
+                           '    gl_PointSize = 10.0;',
+                           '    ',
                            '}']);
 
-let SRC_FRAG = code_lines(['',
+let SRC_FRAG = code_lines(['precision mediump float;',
+                           'uniform vec4 l_color;',
                            'void main() {',
-                           '  gl_FragColor = vec4(1.0, 0.55, 0.17, 1.0);',
+                           '  gl_FragColor = l_color;',
                            '}']);
 
 /********************************************************
  * JS code
  ********************************************************/
-let gl, canvas, head_xy, head_btn, cnt_btn, cnt_left, a_pos, line_color, color_btn, picker, lbl, points = [], color;
+let
+    wgl_ctx,
+    canvas,
+    pt_count,
+    attr_pos,
+    attr_color,
+    picker_btn,
+    picker_input,
+    picker_lbl,
+    color_hex,
+    color_array;
 
+let points = [];
 function main() {
-
     // document elements
     canvas = elem('main_canvas');
-    head_xy = elem('head_xy');
-    head_btn = elem('head_btn');
-    color_btn = elem('color_btn');
-    picker = elem('color_picker');
-    lbl = elem('color_lbl');
-    cnt_btn = 0;
-    cnt_left = 0;
-    color = '#450825';
+    picker_btn = elem('color_btn');
+    picker_input = elem('color_picker');
+    picker_lbl = elem('color_lbl');
+    pt_count = 0;
+    color_hex = '#1a7bd5';
+    picker_input.value = color_hex;
+    picker_btn.style.backgroundColor = color_hex;
     init_webgl();
 
-    let vec4_start;
-    try { vec4_start = make_vec4_color(); } catch (e) { alert(e); }
-    vec4_start.push(0.0);
+    try { color_array = make_vec4_color(); } catch (e) { alert(e); }
 
     register_events();
 
     // clear everything
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    wgl_ctx.clearColor(1.0, 1.0, 1.0, 1.0);
+    wgl_ctx.clear(wgl_ctx.COLOR_BUFFER_BIT);
+    wgl_ctx.uniform4f(attr_color, color_array[0], color_array[1], color_array[2], color_array[3]);
 }
 
 function init_webgl() { // set up webgl context, shaders, etc. and make sure program is loaded
-    try { gl = getWebGLContext(canvas); } catch (e) { alert('PROBLEM LOADING WEBGL CONTEXT\n' + e); }
-    try { initShaders(gl, SRC_VERT, SRC_FRAG); } catch (e) { alert('ERR LOADING SHADERS\n' + e); }
-    try { a_pos = gl.getAttribLocation(gl.program, 'a_pos'); } catch (e) { alert('NO LOC FOR A_POS\n' + e); }
+    try { wgl_ctx = getWebGLContext(canvas); } catch (e) { alert('ERR - WEBGL CONTEXT'); }
+    try { initShaders(wgl_ctx, SRC_VERT, SRC_FRAG); } catch (e) { alert('ERR - SHADERS'); }
+    try { attr_pos = wgl_ctx.getAttribLocation(wgl_ctx.program, 'a_pos'); } catch (e) { alert('ERR - POS'); }
+    try { attr_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'l_color'); } catch (e) { alert('ERR - COLOR'); }
 }
 
 function register_events() { // register events for canvas, button and color picker
     canvas.onclick = function (event_left) { left_click(event_left); }
     canvas.oncontextmenu = function (event_right) { right_click(event_right); }
-    color_btn.onclick = function (press) { color_click(press); }
-    picker.onclick = function (press) { get_color(press); }
-    picker.onchange = function (press) { get_color(press); }
+    picker_btn.onclick = function () { color_click(); }
+    picker_input.onclick = function () { get_color(); }
+    picker_input.onchange = function () { get_color(); }
 }
 
 function left_click(press) {
+    pt_count += 1;
+
     // get coords based on canvas size & then convert to webgl coords
     let x = (press.offsetX / canvas.clientWidth) * 2 - 1;
     let y = ((canvas.clientHeight - press.offsetY) / canvas.clientHeight) * 2 - 1;
@@ -64,46 +77,35 @@ function left_click(press) {
     // add mouse click points to point array
     points.push(x);
     points.push(y);
-
-    cnt_left += 1; // for testing, remove later
-    head_xy.innerText = ' left click count: ' + cnt_left + ' ~~~~ x,y: (' + x.toFixed(3) + ', ' + y.toFixed(3) + ')'; // for testing, remove later
-    try {update_canvas(gl, points, a_pos, cnt_left);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
-
+    try {update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, color_array);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
 }
 
 function right_click(press) {
     let x = (press.offsetX / canvas.clientWidth) * 2 - 1;
     let y = ((canvas.clientHeight - press.offsetY) / canvas.clientHeight) * 2 - 1;
     press.preventDefault(); // prevent right-click context menu from popping up
-    points = []; // clear points from mouse click
+    points.splice(0, points.length); // clear points from mouse click
 
-    cnt_left = 0; // for testing, remove later
-    head_xy.innerText = ' left click count: ' + cnt_left + ' ~~~~ x,y: (' + x.toFixed(3) + ', ' + y.toFixed(3) + ')'; // for testing, remove later
-    try {update_canvas(gl, points, a_pos, cnt_left);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
+    pt_count = 0;
+    try {update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, color_array);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
 }
 
-function color_click(press) {
-    if (lbl.style.display === "none") lbl.style.display = "inline-block";
-    if (picker.style.display === "none") picker.style.display = "inline-block";
+function color_click() {
+    update_style([picker_input, picker_lbl], 'none', 'inline-block');
 }
 
-function get_color(press) {
-    color = picker.value;
-    make_vec4_color();
-
-    if (lbl.style.display === "inline-block") lbl.style.display = "none";
-    if (picker.style.display === "inline-block") picker.style.display = "none";
-    head_btn.innerText = 'Vec4 color: ' + color;
+function get_color() {
+    color_hex = picker_input.value;
+    picker_btn.style.backgroundColor = color_hex;
+    canvas.style.border = '7px solid ' + color_hex;
+    let vec4 = make_vec4_color();
+    if (is_bright(vec4)) {
+        picker_btn.style.color = '#151414';
+    } else {
+        picker_btn.style.color = '#d9d9d9';
+    }
+    color_array = vec4;
+    update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, vec4);
+    update_style([picker_input, picker_lbl], 'inline-block', 'none');
 }
 
-function make_vec4_color() { // hex --> decimal --> vec4: #RRGGBB --> R,G,B --> (R/255),(G/255),(B/255)
-    color = color.replace('#', '');
-    let as_vec4 = [to_vec4(color, 0, 1), to_vec4(color, 2, 3), to_vec4(color, 0, 1)];
-    color = as_vec4.join(', ');
-    return as_vec4;
-}
-
-function to_vec4(line, idx0, idx1) { // get hex for R, G or B based on index values then divide by 255
-    let hex = [line.charAt(idx1), line.charAt(idx0)].join('');
-    return (parseInt(hex, 16) / 255.0).toFixed(3);
-}

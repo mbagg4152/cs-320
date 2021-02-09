@@ -6,19 +6,21 @@
     </head>
     
     <body onload="main()">
-        <button type="button" id="color_btn">Color picker</button>
-        <input type="color" id="color_picker" style="display: none">
-        <label for="color_picker" id="color_lbl" style="display: none">Pick a Color! </label>
-        <h3 id="head_xy">left click count: 0 ~~~~ x,y:(x,y)</h3>
-        <h3 id="head_btn">Color: (default) 255, 140, 44</h3>
+        <h1>Note: The first point doesn't show up so remember where you click!</h1>
+        <div>
+            
+            <button type="button" id="color_btn">Change the color!</button>
+            <label for="color_picker" id="color_lbl" style="display: none">Pick Here! >> </label>
+            <input type="color" id="color_picker" style="display: none">
         
-        <canvas id="main_canvas">
+        </div>
+        
+        <canvas id="main_canvas" width="1200" height="700">
             Please use a browser compatible with Canvas.
         </canvas>
-        
         <script src="lib/webgl-utils.js"></script> <!--Include webgl util code-->
         <script src="lib/webgl-debug.js"></script>
-        <script src="lib/cuon-utils.js"></script>
+        <script src="lib/util.js"></script>
         <script src="lib/a2.js"></script>
     </body>
 </html>

@@ -1,4 +1,4 @@
-/* THIS IS THE UTIL FILE PROVIDED BY THE BOOK
+/* THIS IS THE BUILT ON THE UTIL FILE PROVIDED BY THE BOOK (cuon-utils.js)
 *  Added some functions */
 
 /********************************************************
@@ -8,20 +8,15 @@ function elem(id) { return document.getElementById(id); } // rename function to 
 
 function code_lines(lines) { return lines.join('\n'); } // join code lines by \n, more readable
 
-function update_canvas(gl, points, a_pos, count, l_color, c_val) { // take points from mouse click and add to canvas
+function update_canvas(gl, points, a_pos, count, l_color, c_val) { // update canvas w/ current vertex points
     gl.clear(gl.COLOR_BUFFER_BIT);
+    let res;
+    try { res = config_vertex_buffers(gl, a_pos, points, count);} catch (e) { alert('FAILED TO SET POS'); }
     gl.uniform4f(l_color, c_val[0], c_val[1], c_val[2], c_val[3]);
-    if (count === 1) { // need to draw start point of line
-        gl.vertexAttrib3f(a_pos, points[0], points[1], 0.0);
-        gl.drawArrays(gl.POINTS, 0, 1);
-    } else { // update canvas with lines
-        let res;
-        try { res = config_vertex_buffers(gl, a_pos, points, count);} catch (e) { alert('FAILED TO SET POS'); }
-        gl.drawArrays(gl.LINE_STRIP, 0, res);
-    }
+    gl.drawArrays(gl.LINE_STRIP, 0, res);
 }
 
-function config_vertex_buffers(gl, a_pos, points, count) {
+function config_vertex_buffers(gl, a_pos, points, count) { // sets up buffer to make lines
     let verts = new Float32Array(points);
     let vert_buff;
     try {
@@ -37,6 +32,25 @@ function config_vertex_buffers(gl, a_pos, points, count) {
     return count;
 }
 
+function is_bright(val) { // take avg. of RGB value, return bool based on value. made from vec4 color hence * 255
+    return (((val[0] * 255) + (val[1] * 255) + (val[2] * 255)) / 3).toFixed(1) > 123;
+}
+
+function make_vec4_color() { // hex --> decimal --> vec4: #RRGGBB --> R,G,B --> (R/255),(G/255),(B/255)
+    let color_copy = color_hex;
+    color_copy = color_copy.replace('#', '');
+    return [to_vec4(color_copy, 0, 1), to_vec4(color_copy, 2, 3), to_vec4(color_copy, 4, 5), 1.0];
+}
+
+function to_vec4(line, idx0, idx1) { // get hex for R, G or B based on index values then divide by 255
+    return (parseInt([line.charAt(idx0), line.charAt(idx1)].join(''), 16) / 255.0).toFixed(5);
+}
+
+function update_style(elem_list, c_style, n_style) { // change visibility of color picker & its label
+    for (let i = 0; i < elem_list.length; i++) {
+        if (elem_list[i].style.display === c_style) {elem_list[i].style.display = n_style;}
+    }
+}
 /********************************************************
  * Original code
  ********************************************************/
