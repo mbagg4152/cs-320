@@ -1,16 +1,15 @@
-// import './util';
-
 function elem(id) {return document.getElementById(id);}
-const NLS = '\n;', S_SRC = 'void main(){\n', E_SRC = '}\n';
 
 /********************************************************
  * Shaders
  ********************************************************/
+const NLS = '\n;', S_SRC = 'void main(){\n', E_SRC = '}\n';
+
 let SRC_VERT =
     'attribute vec4 a_pos' + NLS +
     S_SRC +
     '  gl_Position = a_pos' + NLS +
-    '  gl_PointSize =5.0' + NLS +
+    '  gl_PointSize =2.0' + NLS +
     E_SRC;
 
 let SRC_FRAG = 'void main() {\n' +
