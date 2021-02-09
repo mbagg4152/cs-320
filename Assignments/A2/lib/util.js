@@ -1,5 +1,6 @@
-/* THIS IS THE BUILT ON THE UTIL FILE PROVIDED BY THE BOOK (cuon-utils.js)
-*  Added some functions */
+/*  Maggie Horton Winter 2021
+ *  THIS IS THE BUILT ON THE UTIL FILE PROVIDED BY THE BOOK (cuon-utils.js)
+ *  Added some functions */
 
 /********************************************************
  * Added code
@@ -51,6 +52,7 @@ function update_style(elem_list, c_style, n_style) { // change visibility of col
         if (elem_list[i].style.display === c_style) {elem_list[i].style.display = n_style;}
     }
 }
+
 /********************************************************
  * Original code
  ********************************************************/
@@ -72,7 +74,6 @@ function initShaders(gl, vshader, fshader) {
 
     gl.useProgram(program);
     gl.program = program;
-
     return true;
 }
 
@@ -90,7 +91,6 @@ function createProgram(gl, vshader, fshader) {
 
     gl.attachShader(program, vertexShader); // Attach shader object
     gl.attachShader(program, fragmentShader); // Attach shader object
-
     gl.linkProgram(program); // Link the program object
 
     let linked = gl.getProgramParameter(program, gl.LINK_STATUS); // Check the result of linking
@@ -114,7 +114,6 @@ function loadShader(gl, type, source) {
 
     gl.shaderSource(shader, source); // Set the shader program
     gl.compileShader(shader); // Compile the shader
-
     let compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS); // Check the result of compilation
     if (!compiled) {
         let error = gl.getShaderInfoLog(shader);
@@ -128,10 +127,8 @@ function loadShader(gl, type, source) {
 function getWebGLContext(canvas, opt_debug) {
     let gl = WebGLUtils.setupWebGL(canvas);  // Get the rendering context for WebGL
     if (!gl) return null;
-
     if (arguments.length < 2 || opt_debug) { // if opt_debug is explicitly false, create the context for debugging
         gl = WebGLDebugUtils.makeDebugContext(gl);
     }
-
     return gl;
 }
