@@ -2,138 +2,103 @@
 // TODO - CHANGE VAR NAMES
 // TODO - PROB DONT USE SNAKE CASE NAMES
 
-/********************************************************
- * Shaders
- ********************************************************/
-
-// TODO - just write these bad boys using regular string concatenation or smth im just a particular bitch and thought it was ugly
-// TODO - also the shaders dont need to be in screaming snake case do w/e u want
-// TODO - pls change attribute/uniform names. vars w/prefix gl_cannot be changed
-let SRC_VERT = code_lines(['attribute vec4 a_pos;',
-                           'void main(){',
-                           '    gl_Position = a_pos;',
-                           '    gl_PointSize = 10.0;',
-                           '    ',
-                           '}']);
-
-let SRC_FRAG = code_lines(['precision mediump float;',
-                           'uniform vec4 l_color;',
-                           'void main() {',
-                           '  gl_FragColor = l_color;',
-                           '}']);
-
-/********************************************************
- * JS code
- ********************************************************/
-
+// TODO - i renamed the vars here, feel free to change it still if u want
+const vShaderCode = 'attribute vec4 vShaderPoints; void main(){ gl_Position = vShaderPoints; gl_PointSize = 10.0; }';
+const fShaderCode = 'precision mediump float; uniform vec4 fragColor; void main() { gl_FragColor = fragColor; }';
 
 // TODO - could have a separate let statement on each line. also could opt out of using global vars and modify functions to pass values
 // TODO - also could change let to var i think?
 let
-    wgl_ctx,
-    canvas,
-    pt_count,
-    attr_pos,
-    attr_color,
-    picker_btn,
-    picker_input,
-    picker_lbl,
-    color_hex,
-    color_array;
+    gl,
+    drawingCanvas,
+    noOfPoints,
+    vec4Points,
+    vec4Color,
+    colorInput,
+    inputLabel,
+    lineColor,
+    vec4LineColorArr;
 
 let points = [];
 
 // TODO - i dont think you need to have this bitch be called main. just whatever you change it to, make sure to update it in the html to have this launch on load
 function main() {
-    // document elements
-    canvas = elem('main_canvas');
-    picker_btn = elem('color_btn');
-    picker_input = elem('color_picker');
-    picker_lbl = elem('color_lbl');
-    pt_count = 0;
-    color_hex = '#1a7bd5'; // TODO - CHANGE COLOR VALUE
-    picker_input.value = color_hex;
-    picker_btn.style.backgroundColor = color_hex;
-    init_webgl(); // TODO - should just initialize values here i just felt it was too cluttered. that or maybe combine w/ register_events
+    drawingCanvas = document.getElementById('drawSpace');
+    colorInput = document.getElementById('colorInput');
+    inputLabel = document.getElementById('inputLabel');
+    noOfPoints = 0;
+    lineColor = '#1a7bd5'; // TODO - CHANGE COLOR VALUE
+    colorInput.value = lineColor;
+    gl = getWebGLContext(drawingCanvas);
+    initShaders(gl, vShaderCode, fShaderCode);
+    vec4Points = gl.getAttribLocation(gl.program, 'vShaderPoints');
+    vec4Color = gl.getUniformLocation(gl.program, 'fragColor');
+    vec4LineColorArr = makeWebglColor();
+    drawingCanvas.onclick = function (event_left) { left_click(event_left); }
+    drawingCanvas.oncontextmenu = function (event_right) { eraseDrawing(event_right); }
+    colorInput.onchange = function () { getColorInput(); }
 
-    try { color_array = make_vec4_color(); } catch (e) { alert(e); } // TODO - could be moved i think? just makes vec4 array from color
-
-    register_events(); // TODO - can register here or just combine w/ init_webgl
-
-    // clear everything
-    wgl_ctx.clearColor(1.0, 1.0, 1.0, 1.0);
-    wgl_ctx.clear(wgl_ctx.COLOR_BUFFER_BIT);
-
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     // TODO - idk if this line needs to go here
-    wgl_ctx.uniform4f(attr_color, color_array[0], color_array[1], color_array[2], color_array[3]);
-}
-
-function init_webgl() { // set up webgl context, shaders, etc. and make sure program is loaded
-    // TODO - prob dont need try-catch
-    
-    try { wgl_ctx = getWebGLContext(canvas); } catch (e) { alert('ERR - WEBGL CONTEXT'); }
-    try { initShaders(wgl_ctx, SRC_VERT, SRC_FRAG); } catch (e) { alert('ERR - SHADERS'); } 
-    try { attr_pos = wgl_ctx.getAttribLocation(wgl_ctx.program, 'a_pos'); } catch (e) { alert('ERR - POS'); } // TODO - change name to whatever name is used in the shader
-    try { attr_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'l_color'); } catch (e) { alert('ERR - COLOR'); } // TODO - change name to whatever name is used in the shader
-}
-
-function register_events() { // register events for canvas, button and color picker
-    canvas.onclick = function (event_left) { left_click(event_left); }
-    canvas.oncontextmenu = function (event_right) { right_click(event_right); }
-    // TODO - remove this if you dont add button
-    picker_btn.onclick = function () { color_click(); }
-    picker_input.onclick = function () { get_color(); }
-    picker_input.onchange = function () { get_color(); }
+    gl.uniform4f(vec4Color, vec4LineColorArr[0], vec4LineColorArr[1], vec4LineColorArr[2], vec4LineColorArr[3]);
 }
 
 function left_click(press) {
-    pt_count += 1; // TODO - not needed, can use points.length/2 later when point count is needed
-
+    noOfPoints += 1;
     // TODO - idk how to change this that much but pls try ur darndest
     // get coords based on canvas size & then convert to webgl coords
-    let x = (press.offsetX / canvas.clientWidth) * 2 - 1;
-    let y = ((canvas.clientHeight - press.offsetY) / canvas.clientHeight) * 2 - 1;
+    let x = (press.offsetX / drawingCanvas.clientWidth) * 2 - 1;
+    let y = ((drawingCanvas.clientHeight - press.offsetY) / drawingCanvas.clientHeight) * 2 - 1;
 
     // add mouse click points to point array
     points.push(x);
     points.push(y);
-    // TODO - prob dont need try catch?
-    try {update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, color_array);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
+    update(gl, points, vec4Points, noOfPoints, vec4Color, vec4LineColorArr);
 }
 
-function right_click(press) {
-    // TODO - get rid of x & y idk why i left them and submitted the code with these in here ugh
-    let x = (press.offsetX / canvas.clientWidth) * 2 - 1;
-    let y = ((canvas.clientHeight - press.offsetY) / canvas.clientHeight) * 2 - 1;
+function eraseDrawing(press) {
     // TODO - maybe can remove this? idk how itll affect it if popup still happens
     press.preventDefault(); // prevent right-click context menu from popping up
     points.splice(0, points.length); // clear points from mouse click
-
-    // TODO - could also just reinforce that points.length is 0 idk
-    pt_count = 0;
-
-    // TODO - prob dont need try catch
-    try {update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, color_array);} catch (e) {alert('ERR UPDATING CANVAS\n' + e);}
+    noOfPoints = 0;
+    update(gl, points, vec4Points, noOfPoints, vec4Color, vec4LineColorArr);
 }
 
-function color_click() {
-    update_style([picker_input, picker_lbl], 'none', 'inline-block');
+function getColorInput() {
+    lineColor = colorInput.value;
+    let vec4 = makeWebglColor();
+    vec4LineColorArr = vec4;
+    update(gl, points, vec4Points, noOfPoints, vec4Color, vec4);
 }
 
-function get_color() {
-    color_hex = picker_input.value;
-    picker_btn.style.backgroundColor = color_hex; // TODO - dont need
-    canvas.style.border = '7px solid ' + color_hex; // TODO - dont need
-    let vec4 = make_vec4_color();
-
-    // TODO - extra bitch shit
-    if (is_bright(vec4)) {
-        picker_btn.style.color = '#151414';
-    } else {
-        picker_btn.style.color = '#d9d9d9';
-    }
-    color_array = vec4;
-    update_canvas(wgl_ctx, points, attr_pos, pt_count, attr_color, vec4);
-    update_style([picker_input, picker_lbl], 'inline-block', 'none'); // TODO - dont need
+// TODO -not needed but helpful to avoid reusing code a lot. change params & param order pls dont need count, can just divide length of points by 2
+function update(gl, points, vShaderPoints, count, fragColor, c_val) { // update canvas w/ current vertex points
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    let res = setupBuff(gl, vShaderPoints, points, count);
+    gl.uniform4f(fragColor, c_val[0], c_val[1], c_val[2], c_val[3]);
+    gl.drawArrays(gl.LINE_STRIP, 0, res);
 }
 
+// TODO - def needed for drawing the lines. maybe figure out how to draw just a point?
+function setupBuff(gl, vShaderPoints, points, count) { // sets up buffer to make lines
+    let verts = new Float32Array(points);
+    let vert_buff = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, vert_buff);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(vShaderPoints, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vShaderPoints);
+    return count;
+}
+
+// TODO - not needed but shortens lines. conversion from hex to vec4 is necessary
+function makeWebglColor() { // hex --> decimal --> vec4: #RRGGBB --> R,G,B --> (R/255),(G/255),(B/255)
+    let copy = lineColor;
+    copy = copy.replace('#', '');
+    return [hexToVec4(copy, 0, 1), hexToVec4(copy, 2, 3), hexToVec4(copy, 4, 5), 1.0];
+}
+
+// TODO - could just be done in previous function i guess
+function hexToVec4(line, idx0, idx1) { // get hex for R, G or B based on index values then divide by 255
+    return (parseInt([line.charAt(idx0), line.charAt(idx1)].join(''), 16) / 255.0).toFixed(5);
+}
