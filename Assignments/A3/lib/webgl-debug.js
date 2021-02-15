@@ -1,153 +1,51 @@
-//Copyright (c) 2009 The Chromium Authors. All rights reserved.
-//Use of this source code is governed by a BSD-style license that can be
-//found in the LICENSE file.
-
-// Various functions for helping debug WebGL apps.
+// Slightly modified version of webgl-debug
 
 WebGLDebugUtils = function () {
-
-    /**
-     * Wrapped logging function.
-     * @param {string} msg Message to log.
-     */
-    var log = function (msg) {
-        if (window.console && window.console.log) {
-            window.console.log(msg);
-        }
+    let log = function (msg) {
+        if (window.console && window.console.log) window.console.log(msg);
     };
 
-    /**
-     * Which arguements are enums.
-     * @type {!Object.<number, string>}
-     */
-    var glValidEnumContexts = {
-
-        // Generic setters and getters
-
-        'enable': {0: true},
-        'disable': {0: true},
-        'getParameter': {0: true},
-
-        // Rendering
-
-        'drawArrays': {0: true},
-        'drawElements': {0: true, 2: true},
-
-        // Shaders
-
-        'createShader': {0: true},
-        'getShaderParameter': {1: true},
-        'getProgramParameter': {1: true},
-
-        // Vertex attributes
-
-        'getVertexAttrib': {1: true},
-        'vertexAttribPointer': {2: true},
-
-        // Textures
-
-        'bindTexture': {0: true},
-        'activeTexture': {0: true},
-        'getTexParameter': {0: true, 1: true},
-        'texParameterf': {0: true, 1: true},
-        'texParameteri': {0: true, 1: true, 2: true},
-        'texImage2D': {0: true, 2: true, 6: true, 7: true},
-        'texSubImage2D': {0: true, 6: true, 7: true},
-        'copyTexImage2D': {0: true, 2: true},
-        'copyTexSubImage2D': {0: true},
-        'generateMipmap': {0: true},
-
-        // Buffer objects
-
-        'bindBuffer': {0: true},
-        'bufferData': {0: true, 2: true},
-        'bufferSubData': {0: true},
-        'getBufferParameter': {0: true, 1: true},
-
-        // Renderbuffers and framebuffers
-
-        'pixelStorei': {0: true, 1: true},
-        'readPixels': {4: true, 5: true},
-        'bindRenderbuffer': {0: true},
-        'bindFramebuffer': {0: true},
-        'checkFramebufferStatus': {0: true},
-        'framebufferRenderbuffer': {0: true, 1: true, 2: true},
-        'framebufferTexture2D': {0: true, 1: true, 2: true},
+    let glValidEnumContexts = {
+        'enable': {0: true}, 'disable': {0: true}, 'getParameter': {0: true}, 'drawArrays': {0: true},
+        'drawElements': {0: true, 2: true}, 'createShader': {0: true}, 'getShaderParameter': {1: true},
+        'getProgramParameter': {1: true}, 'getVertexAttrib': {1: true}, 'vertexAttribPointer': {2: true},
+        'bindTexture': {0: true}, 'activeTexture': {0: true}, 'getTexParameter': {0: true, 1: true},
+        'texParameterf': {0: true, 1: true}, 'texParameteri': {0: true, 1: true, 2: true},
+        'texImage2D': {0: true, 2: true, 6: true, 7: true}, 'texSubImage2D': {0: true, 6: true, 7: true},
+        'copyTexImage2D': {0: true, 2: true}, 'copyTexSubImage2D': {0: true}, 'generateMipmap': {0: true},
+        'bindBuffer': {0: true}, 'bufferData': {0: true, 2: true}, 'bufferSubData': {0: true},
+        'getBufferParameter': {0: true, 1: true}, 'pixelStorei': {0: true, 1: true}, 'readPixels': {4: true, 5: true},
+        'bindRenderbuffer': {0: true}, 'bindFramebuffer': {0: true}, 'checkFramebufferStatus': {0: true},
+        'framebufferRenderbuffer': {0: true, 1: true, 2: true}, 'framebufferTexture2D': {0: true, 1: true, 2: true},
         'getFramebufferAttachmentParameter': {0: true, 1: true, 2: true},
-        'getRenderbufferParameter': {0: true, 1: true},
-        'renderbufferStorage': {0: true, 1: true},
-
-        // Frame buffer operations (clear, blend, depth test, stencil)
-
-        'clear': {0: true},
-        'depthFunc': {0: true},
-        'blendFunc': {0: true, 1: true},
-        'blendFuncSeparate': {0: true, 1: true, 2: true, 3: true},
-        'blendEquation': {0: true},
-        'blendEquationSeparate': {0: true, 1: true},
-        'stencilFunc': {0: true},
-        'stencilFuncSeparate': {0: true, 1: true},
-        'stencilMaskSeparate': {0: true},
-        'stencilOp': {0: true, 1: true, 2: true},
-        'stencilOpSeparate': {0: true, 1: true, 2: true, 3: true},
-
-        // Culling
-
-        'cullFace': {0: true},
-        'frontFace': {0: true},
+        'getRenderbufferParameter': {0: true, 1: true}, 'renderbufferStorage': {0: true, 1: true}, 'clear': {0: true},
+        'depthFunc': {0: true}, 'blendFunc': {0: true, 1: true},
+        'blendFuncSeparate': {0: true, 1: true, 2: true, 3: true}, 'blendEquation': {0: true},
+        'blendEquationSeparate': {0: true, 1: true}, 'stencilFunc': {0: true},
+        'stencilFuncSeparate': {0: true, 1: true}, 'stencilMaskSeparate': {0: true},
+        'stencilOp': {0: true, 1: true, 2: true}, 'stencilOpSeparate': {0: true, 1: true, 2: true, 3: true},
+        'cullFace': {0: true}, 'frontFace': {0: true},
     };
+    let glEnums = null;
 
-    /**
-     * Map of numbers to names.
-     * @type {Object}
-     */
-    var glEnums = null;
-
-    /**
-     * Initializes this module. Safe to call more than once.
-     * @param {!WebGLRenderingContext} ctx A WebGL context. If
-     *    you have more than one context it doesn't matter which one
-     *    you pass in, it is only used to pull out constants.
-     */
     function init(ctx) {
         if (glEnums == null) {
             glEnums = {};
-            for (var propertyName in ctx) {
-                if (typeof ctx[propertyName] == 'number') {
-                    glEnums[ctx[propertyName]] = propertyName;
-                }
+            for (let propertyName in ctx) {
+                if (typeof ctx[propertyName] == 'number') glEnums[ctx[propertyName]] = propertyName;
             }
         }
     }
 
-    /**
-     * Checks the utils have been initialized.
-     */
     function checkInit() {
-        if (glEnums == null) {
-            throw 'WebGLDebugUtils.init(ctx) not called';
-        }
+        if (glEnums == null) throw 'WebGLDebugUtils.init(ctx) not called';
     }
 
-    /**
-     * Returns true or false if value matches any WebGL enum
-     * @param {*} value Value to check if it might be an enum.
-     * @return {boolean} True if value matches one of the WebGL defined enums
-     */
     function mightBeEnum(value) {
         checkInit();
         return (glEnums[value] !== undefined);
     }
 
-    /**
-     * Gets an string version of an WebGL enum.
-     *
-     * Example:
-     *   var str = WebGLDebugUtil.glEnumToString(ctx.getError());
-     *
-     * @param {number} value Value to return an enum for
-     * @return {string} The string version of the enum.
-     */
     function glEnumToString(value) {
         checkInit();
         let name = glEnums[value];

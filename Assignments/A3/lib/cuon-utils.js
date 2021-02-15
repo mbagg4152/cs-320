@@ -1,4 +1,15 @@
 // Modified version of cuon-utils.js (c) 2012 kanda and matsuda
+/*
+ * ADDED CODE
+ */
+
+function code_lines(lines) { return lines.join('\n'); } // join code lines by \n, more readable
+function elem(id) {return document.getElementById(id);}
+
+
+/*
+ * ORIGINAL CODE
+ */
 function initShaders(gl, vshader, fshader) { // Create a program object and make current
     let program = createProgram(gl, vshader, fshader);
     if (!program) {
@@ -60,3 +71,4 @@ function getWebGLContext(canvas, opt_debug) { // Initialize and get the renderin
     if (arguments.length < 2 || opt_debug) gl = WebGLDebugUtils.makeDebugContext(gl);
     return gl;
 }
+
