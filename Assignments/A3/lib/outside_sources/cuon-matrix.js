@@ -43,6 +43,7 @@ Matrix4.prototype.setIdentity = function () {
 
 Matrix4.prototype.set = function (src) {
     let i, s, d;
+    s = src.elements;
     d = this.elements;
     if (s === d) return;
     for (i = 0; i < 16; ++i) d[i] = s[i];
@@ -186,7 +187,7 @@ Matrix4.prototype.lookAt = function (eyeX, eyeY, eyeZ, centerX, centerY, centerZ
 };
 
 Matrix4.prototype.setOrtho = function (left, right, bottom, top, near, far) {
-    var e, rw, rh, rd;
+    let e, rw, rh, rd;
 
     if (left === right || bottom === top || near === far) throw 'null frustum';
     rw = 1/(right - left);
