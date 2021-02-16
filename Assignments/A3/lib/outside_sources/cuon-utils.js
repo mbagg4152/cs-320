@@ -1,4 +1,4 @@
-// Modified version of util.js (c) 2012 kanda and matsuda
+// Modified version of util_consts.js (c) 2012 kanda and matsuda
 function initShaders(gl, vshader, fshader) { // Create a program object and make current
     if (!vshader || !fshader) {
         if (!vshader) clog('initShaders: vshader null');
