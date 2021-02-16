@@ -10,6 +10,16 @@ let Matrix4 = function (opt_src) {
     } else this.elements = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 };
 
+Matrix4.prototype.frustum = function (left, right, bottom, top, near, far) {
+    return this.concat(new Matrix4().setFrustum(left, right, bottom, top, near, far));
+};
+
+Matrix4.prototype.ortho = function (left, right, bottom, top, near, far) {
+    return this.concat(new Matrix4().setOrtho(left, right, bottom, top, near, far));
+};
+
+Matrix4.prototype.multiply = Matrix4.prototype.concat;
+
 Matrix4.prototype.setIdentity = function () {
     let e = this.elements;
     e[0] = 1;
@@ -65,7 +75,11 @@ Matrix4.prototype.concat = function (other) {
     return this;
 };
 
-Matrix4.prototype.multiply = Matrix4.prototype.concat;
+Matrix4.prototype.invert = function () { return this.setInverseOf(this); };
+
+Matrix4.prototype.perspective = function (fovy, aspect, near, far) {
+    return this.concat(new Matrix4().setPerspective(fovy, aspect, near, far));
+};
 
 Matrix4.prototype.multiplyVector3 = function (pos) {
     let e = this.elements, p = pos.elements, v = new Vector3(), result = v.elements;
@@ -163,7 +177,13 @@ Matrix4.prototype.setInverseOf = function (other) {
     return this;
 };
 
-Matrix4.prototype.invert = function () { return this.setInverseOf(this); };
+Matrix4.prototype.rotate = function (angle, x, y, z) {
+    return this.concat(new Matrix4().setRotate(angle, x, y, z));
+};
+
+Matrix4.prototype.lookAt = function (eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
+    return this.concat(new Matrix4().setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ));
+};
 
 Matrix4.prototype.setOrtho = function (left, right, bottom, top, near, far) {
     var e, rw, rh, rd;
@@ -191,10 +211,6 @@ Matrix4.prototype.setOrtho = function (left, right, bottom, top, near, far) {
     e[14] = -(far + near)*rd;
     e[15] = 1;
     return this;
-};
-
-Matrix4.prototype.ortho = function (left, right, bottom, top, near, far) {
-    return this.concat(new Matrix4().setOrtho(left, right, bottom, top, near, far));
 };
 
 Matrix4.prototype.setFrustum = function (left, right, bottom, top, near, far) {
@@ -226,10 +242,6 @@ Matrix4.prototype.setFrustum = function (left, right, bottom, top, near, far) {
     e[14] = -2*near*far*rd;
     e[15] = 0;
     return this;
-};
-
-Matrix4.prototype.frustum = function (left, right, bottom, top, near, far) {
-    return this.concat(new Matrix4().setFrustum(left, right, bottom, top, near, far));
 };
 
 Matrix4.prototype.setPerspective = function (fovy, aspect, near, far) {
@@ -265,31 +277,6 @@ Matrix4.prototype.setPerspective = function (fovy, aspect, near, far) {
     e[15] = 0;
     return this;
 };
-
-Matrix4.prototype.perspective = function (fovy, aspect, near, far) {
-    return this.concat(new Matrix4().setPerspective(fovy, aspect, near, far));
-};
-
-Matrix4.prototype.update = function (v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15) {
-    let e = this.elements;
-    e[0] = v0;
-    e[1] = v1;
-    e[2] = v2;
-    e[3] = v3;
-    e[4] = v4;
-    e[5] = v5;
-    e[6] = v6;
-    e[7] = v7;
-    e[8] = v8;
-    e[9] = v9;
-    e[10] = v10;
-    e[11] = v11;
-    e[12] = v12;
-    e[13] = v13;
-    e[14] = v14;
-    e[15] = v15;
-    return this;
-}
 
 Matrix4.prototype.setScale = function (x, y, z) {
     let e = this.elements;
@@ -458,10 +445,6 @@ Matrix4.prototype.setRotate = function (angle, x, y, z) {
     return this;
 };
 
-Matrix4.prototype.rotate = function (angle, x, y, z) {
-    return this.concat(new Matrix4().setRotate(angle, x, y, z));
-};
-
 Matrix4.prototype.setLookAt = function (eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
     let e, fx, fy, fz, rlf, sx, sy, sz, rls, ux, uy, uz;
 
@@ -506,10 +489,6 @@ Matrix4.prototype.setLookAt = function (eyeX, eyeY, eyeZ, centerX, centerY, cent
     e[15] = 1;
 
     return this.translate(-eyeX, -eyeY, -eyeZ);
-};
-
-Matrix4.prototype.lookAt = function (eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
-    return this.concat(new Matrix4().setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ));
 };
 
 Matrix4.prototype.dropShadow = function (plane, light) {
