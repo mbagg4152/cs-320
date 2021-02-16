@@ -2,11 +2,18 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <meta charset="utf-8"/>
         <title>Assignment 3 Part 1</title>
         <style>
             canvas {
-                border: 1px solid #000000;
+                display: inline;
             }
+            
+            div {
+                width: 100%;
+                text-align: center;
+            }
+        
         </style>
     </head>
     
@@ -15,8 +22,11 @@
             <canvas id="canvas1" width="350" height="350">CANVAS ERR</canvas>
             <canvas id="canvas2" width="350" height="350">CANVAS ERR</canvas>
             <canvas id="canvas3" width="350" height="350">CANVAS ERR</canvas>
-            <canvas id="canvas4" width="350" height="350">CANVAS ERR</canvas>
         </div>
+        <div>
+            <canvas id="canvas4" width="500" height="500">CANVAS ERR</canvas>
+        </div>
+        
         <script src="lib/webgl-utils.js"></script>
         <script src="lib/webgl-debug.js"></script>
         <script src="lib/cuon-utils.js"></script>

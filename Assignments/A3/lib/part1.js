@@ -29,37 +29,44 @@ const src_frag = code_lines(['void main() {',
                              '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',
                              '}']);
 
-// The translation distance for x, y, and z direction
-let dx = 0.0, dy = 0.0, dz = 0.0;
-let can4, gl4, n, u_trans, a_pos,
-    can1, can2, can3, gl1, gl2, gl3;
-can4 = elem('canvas4');
-can2 = elem('canvas2');
-can3 = elem('canvas3');
-const tri_points = [0, 0.5, -0.5, -0.5, 0.5, -0.5], sq_points = [0, 0,
-                                                                 0, 0.1,
-                                                                 0.1, 0.1,
-                                                                 0, 0,
-                                                                 0.1, 0.1,
-                                                                 0.1, 0],
-    dot_points = [0, 0];
-let r_verts, r_num_verts, r_res;
+let can1 = elem('canvas1'), can2 = elem('canvas2'), can3 = elem('canvas3'), can4 = elem('canvas4'), shift_x = 0.0,
+    shift_y = 0.0, shift_z = 0.0;
+let attr_pos, gl1, gl2, gl3, gl4, pts_circle, pts_ellipse, uni_trans, v_count;
+
+const pts_triangle = [0, 0.5, -0.5, -0.5, 0.5, -0.5],
+    pts_square = [-0.3, -0.3, -0.3, 0.3, 0.3, 0.3, -0.3, -0.3, 0.3, 0.3, 0.3, -0.3];
+
 function main() {
     config_draw(gl2, 'T', can2);
     config_draw(gl4, 'S', can4);
+    pts_circle = make_circ_points('C', 0, 0);
+    pts_ellipse = make_circ_points('E', 0.6, 0.4);
+    config_draw(gl3, 'C', can3);
+    config_draw(gl1, 'E', can1);
 }
 
 function config_draw(gl, shape, canvas) {
     try { gl = getWebGLContext(canvas); } catch (e) { alert(e); }
     try { initShaders(gl, src_vert, src_frag); } catch (e) { alert(e); }
-    try { n = initVertexBuffers(gl, shape); } catch (e) { alert(e); }
-    try { u_trans = gl.getUniformLocation(gl.program, 'u_trans'); } catch (e) { alert(e); }
-    gl.uniform4f(u_trans, dx, dy, dz, 0.0);
-    gl.clearColor(0, 0, 0, 1);
+    try { v_count = initVertexBuffers(gl, shape); } catch (e) { alert(e); }
+    try { uni_trans = gl.getUniformLocation(gl.program, 'u_trans'); } catch (e) { alert(e); }
+    gl.uniform4f(uni_trans, shift_x, shift_y, shift_z, 0.0);
+    gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    if (shape === 'S') gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
-    else if (shape === 'T') gl.drawArrays(gl.TRIANGLES, 0, n);
+    if (shape === 'S') gl.drawArrays(gl.TRIANGLE_STRIP, 0, v_count);
+    else if (shape === 'T') gl.drawArrays(gl.TRIANGLES, 0, v_count);
+    else if (shape === 'C' || shape === 'E') gl.drawArrays(gl.TRIANGLE_STRIP, 0, v_count);
+}
 
+function make_circ_points(shape, a, b) {
+    let verts = [];
+    for (let i = 0.0; i <= 360.0; i += 1) {
+        let pt = (i * Math.PI) / 180;
+        if (shape === 'C') verts = verts.concat([Math.cos(pt) / 2, Math.sin(pt) / 2, 0, 0]);
+        if (shape === 'E') verts = verts.concat([(a * Math.cos(pt)), (b * Math.sin(pt)), 0, 0]);
+    }
+
+    return verts;
 }
 
 function initVertexBuffers(gl, shape) {
@@ -67,25 +74,27 @@ function initVertexBuffers(gl, shape) {
 
     if (shape === 'T') {
         n = 3;
-        verts = new Float32Array(tri_points);
+        verts = new Float32Array(pts_triangle);
 
     } else if (shape === 'S') {
         n = 6;
-        verts = new Float32Array(sq_points);
-    } else if (shape === 'O') {
-
+        verts = new Float32Array(pts_square);
     } else if (shape === 'C') {
-
+        n = pts_circle.length / 2;
+        verts = new Float32Array(pts_circle);
+    } else if (shape === 'E') {
+        n = pts_ellipse.length / 2;
+        verts = new Float32Array(pts_ellipse);
     }
     let vertexBuffer = gl.createBuffer();
     if (!vertexBuffer) alert('Failed to create the buffer object');
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
 
-    a_pos = gl.getAttribLocation(gl.program, 'a_pos');
-    if (a_pos < 0) alert('Failed to get the storage location of a_pos');
-    gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(a_pos);
+    attr_pos = gl.getAttribLocation(gl.program, 'a_pos');
+    if (attr_pos < 0) alert('Failed to get the storage location of a_pos');
+    gl.vertexAttribPointer(attr_pos, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(attr_pos);
 
     return n;
 }
