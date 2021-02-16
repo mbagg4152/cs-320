@@ -1,15 +1,23 @@
-// Modified version of cuon-utils.js (c) 2012 kanda and matsuda
-/*
- * ADDED CODE
- */
-
-function code_lines(lines) { return lines.join('\n'); } // join code lines by \n, more readable
+// Modified version of util.js (c) 2012 kanda and matsuda
+/********************************************************
+ * Added code
+ ********************************************************/
+function mk_src(lines) { return lines.join('\n'); } // join code lines by \n, more readable
 function elem(id) {return document.getElementById(id);}
 
+function make_vec4_color(color_hex) { // hex --> decimal --> vec4: #RRGGBB --> R,G,B --> (R/255),(G/255),(B/255)
+    let color_copy = color_hex;
+    color_copy = color_copy.replace('#', '');
+    return [to_vec4(color_copy, 0, 1), to_vec4(color_copy, 2, 3), to_vec4(color_copy, 4, 5), 1.0];
+}
 
-/*
- * ORIGINAL CODE
- */
+function to_vec4(line, idx0, idx1) { // get hex for R, G or B based on index values then divide by 255
+    return (parseInt([line.charAt(idx0), line.charAt(idx1)].join(''), 16) / 255.0).toFixed(5);
+}
+
+/********************************************************
+ * Original code
+ ********************************************************/
 function initShaders(gl, vshader, fshader) { // Create a program object and make current
     let program = createProgram(gl, vshader, fshader);
     if (!program) {
