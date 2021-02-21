@@ -1,4 +1,4 @@
-function init_buffers(gl, verts) {
+function init_buffers(gl, verts, attr_pos) {
     let vert_buff;
     try {
         vert_buff = gl.createBuffer();
@@ -12,6 +12,14 @@ function init_buffers(gl, verts) {
     gl.vertexAttribPointer(attr_pos, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(attr_pos);
     return verts.length/2;
+}
+
+function update_canvas(gl, pos_loc, points) { // update canvas w/ current vertex points
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    let res;
+    try { res = init_buffers(gl, points, pos_loc);} catch (e) { alert('FAILED TO SET POS'); }
+    // gl.uniform4f(col_loc, color[0], color[1], color[2], color[3]);
+    gl.drawArrays(gl.LINE_STRIP, 0, res);
 }
 
 function vec4(color_hex) { // hex --> decimal --> vec4: #RRGGBB --> R,G,B --> (R/255),(G/255),(B/255)
