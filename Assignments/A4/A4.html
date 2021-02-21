@@ -1,0 +1,41 @@
+<!--MAKE SURE TO CHANGE IDs-->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Assignment 4</title>
+        <style>
+            canvas {
+                display: inline;
+                margin-left: 40px;
+                margin-right: 40px;
+                margin-top: 20px;
+                border: black solid 1px;
+            }
+            
+            div {
+                width: 100%;
+                text-align: center;
+                margin-top: 40px;
+            }
+        
+        </style>
+    </head>
+    
+    <body onload="main()">
+        <div>
+            <button id="btn_translate">Translate</button>
+            <button id="btn_scale">Scale</button>
+            <button id="btn_rotate">Rotate</button>
+            <button id="btn_animate">Animate</button>
+        </div>
+        <div>
+            <canvas id="wgl_canvas" width="400" height="400">CANVAS ERR</canvas>
+        </div>
+        <script src="lib/outside_sources/webgl-utils.js"></script>
+        <script src="lib/outside_sources/webgl-debug.js"></script>
+        <script src="lib/outside_sources/cuon-utils.js"></script>
+        <script src="lib/A4.js"></script>
+    
+    </body>
+</html>
