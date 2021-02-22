@@ -1,4 +1,4 @@
-function init_buffers(gl, verts, attr_pos) {
+function init_vbuff(gl, verts, attr_pos) {
     let vert_buff;
     try {
         vert_buff = gl.createBuffer();
@@ -18,7 +18,7 @@ function update_canvas(gl, pos_loc, points, u_matrix, m_matrix) { // update canv
     gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     let res;
-    try { res = init_buffers(gl, points, pos_loc);} catch (e) { alert('FAILED TO SET POS'); }
+    try { res = init_vbuff(gl, points, pos_loc);} catch (e) { alert('FAILED TO SET POS'); }
     wgl_ctx.uniformMatrix4fv(u_matrix, false, m_matrix.elements);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, res);
 }
