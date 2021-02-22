@@ -1,3 +1,4 @@
+// Maggie Horton - Graphics Assignment 4 Winter 2021
 const SRC_VERT = 'attribute vec4 a_pos; uniform mat4 u_matrix; void main() { gl_Position = u_matrix*a_pos; }';
 const FRAG_BASIC = 'precision mediump float; uniform vec4 u_col;  void main() { gl_FragColor = u_col; }';
 const ANIM_TXT1 = 'Start animation', ANIM_TXT2 = 'Stop animation';
@@ -91,7 +92,7 @@ b_zero.onclick = function zero() { // set quad rotation back to 0 degrees
     update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
 }
 
-b_anim.onclick = function animate() {
+b_anim.onclick = function animate() { // start or stop animation of rotating quad
     if (b_anim.innerText === ANIM_TXT1) {
         b_anim.innerText = ANIM_TXT2; // update to say 'stop animation'
         // disable other buttons so they cant be used while animating
@@ -125,8 +126,8 @@ function rotate_animation() {
 }
 
 function render_rotation() {
-    anim_timer++;
-    count_rot += 1.0;
+    anim_timer++; // increase timer
+    count_rot += 1.0; // increase rotation count
     update_matrix(true);
     update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
 }

@@ -1,4 +1,5 @@
-function init_vbuff(gl, verts, attr_pos) {
+// Maggie Horton - Graphics Assignment 4 Winter 2021
+function init_vbuff(gl, verts, attr_pos) { // set up vertex buffer for webgl
     let vert_buff;
     try {
         vert_buff = gl.createBuffer();
