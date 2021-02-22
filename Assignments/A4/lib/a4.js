@@ -1,82 +1,101 @@
-const SRC_VERT = 'attribute vec4 a_pos; uniform vec4 u_trans; void main() { gl_Position = a_pos + u_trans; }';
+const SRC_VERT = 'attribute vec4 a_pos; uniform mat4 u_matrix; void main() { gl_Position = u_matrix*a_pos; }';
 const FRAG_BASIC = 'precision mediump float; uniform vec4 u_col;  void main() { gl_FragColor = u_col; }';
-const move_txt1 = 'Move by 10px', move_txt2 = 'Undo Move', scale_txt1 = 'Scale by 2px', scale_txt2 = 'Undo Scaling',
-    rot_txt1 = 'Rotate 45 deg', rot_txt2 = 'Undo Rotation', anim_txt1 = 'Start animation',
-    anim_txt2 = 'Stop animation';
-
-const pts = [-0.2, -0.2, -0.2, 0.2, 0.2, 0.2, -0.2, -0.2, 0.2, 0.2, 0.2, -0.2];
-const color = vec4('#8d0000');
+const ANIM_TXT1 = 'Start animation', ANIM_TXT2 = 'Stop animation';
+const POINTS = [-0.2, -0.2, -0.2, 0.2, 0.2, 0.2, -0.2, -0.2, 0.2, 0.2, 0.2, -0.2];
+const COLOR = vec4('#00447d'), ANGLE = 45.0, SCALE = 2.0;
 
 let canvas = elem('wgl_canvas');
-let shift_x = 0.0;
-let shift_y = 0.0;
-let shift_z = 0.0;
-let attr_pos;
-let wgl_ctx;
-let uni_color;
-let uni_trans;
-let v_count;
-let btn_move = elem('btn_translate');
-let btn_scale = elem('btn_scale');
-let btn_rotate = elem('btn_rotate');
-let btn_animate = elem('btn_animate');
+let wgl_ctx, m_matrix, a_position, u_color, u_matrix;
+let b_move = elem('b_move'), b_scale = elem('b_scale'), b_rotate = elem('b_rotate'), b_anim = elem('b_animate');
+let b_center = elem('b_center'), b_resize = elem('b_resize'), b_zero = elem('b_zero');
+let move_x = 10/canvas.clientWidth, move_y = 10/canvas.clientHeight;
+let count_move = 0.0, count_scale = 0.0, count_rot = 0.0, v_count;
 
 function main() {
     setup_webgl();
     setup_buttons();
-
 }
 
 function setup_webgl() {
-    try { wgl_ctx = getWebGLContext(canvas); } catch (e) { alert('CTX ERR\n' + e); }
-    try { initShaders(wgl_ctx, SRC_VERT, FRAG_BASIC); } catch (e) { clog('SHADER ERR\n' + e); }
-    try { uni_trans = wgl_ctx.getUniformLocation(wgl_ctx.program, 'u_trans'); } catch (e) { clog('TRANS ERR\n' + e); }
-    try { v_count = init_buffers(wgl_ctx, pts,attr_pos); } catch (e) { clog('BUFF ERR\n' + e); }
-    try { uni_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'u_col'); } catch (e) { clog('COLOR ERR\n' + e); }
-    wgl_ctx.uniform4f(uni_color, color[0], color[1], color[2], color[3]);
-    wgl_ctx.uniform4f(uni_trans, shift_x, shift_y, shift_z, 0.0);
+    m_matrix = new Matrix4();
+    wgl_ctx = getWebGLContext(canvas);
+    initShaders(wgl_ctx, SRC_VERT, FRAG_BASIC);
+    u_matrix = wgl_ctx.getUniformLocation(wgl_ctx.program, 'u_matrix');
+    v_count = init_buffers(wgl_ctx, POINTS, a_position);
+    u_color = wgl_ctx.getUniformLocation(wgl_ctx.program, 'u_col');
+    wgl_ctx.uniform4f(u_color, COLOR[0], COLOR[1], COLOR[2], COLOR[3]);
+    wgl_ctx.uniformMatrix4fv(u_matrix, false, m_matrix.elements);
     wgl_ctx.clearColor(1, 1, 1, 1);
     wgl_ctx.clear(wgl_ctx.COLOR_BUFFER_BIT);
     wgl_ctx.drawArrays(wgl_ctx.TRIANGLE_STRIP, 0, v_count);
 }
 
 function setup_buttons() {
-    btn_move.innerText = move_txt1;
-    btn_scale.innerText = scale_txt1;
-    btn_rotate.innerText = rot_txt1;
-    btn_animate.innerText = anim_txt1;
-    btn_move.onclick = function () {move_click();}
-    btn_scale.onclick = function () {scale_click();}
-    btn_rotate.onclick = function () {rotate_click();}
-    btn_animate.onclick = function () {animate_click();}
+    b_center.disabled = true;
+    b_resize.disabled = true;
+    b_zero.disabled = true;
+    b_anim.innerText = ANIM_TXT1;
 }
 
-function move_click() {
-    if (btn_move.innerText === move_txt1) btn_move.innerText = move_txt2;
-    else if (btn_move.innerText === move_txt2) btn_move.innerText = move_txt1;
-
+function update_matrix() {
+    m_matrix = new Matrix4();
+    if (count_rot) m_matrix.setRotate(ANGLE*count_rot, 0, 0, 1);
+    if (count_scale) m_matrix.scale(SCALE*count_scale, SCALE*count_scale, 0);
+    if (count_move) m_matrix.translate(count_move*move_x, count_move*move_y, 0);
 }
 
-function scale_click() {
-    if (btn_scale.innerText === scale_txt1) btn_scale.innerText = scale_txt2;
-    else if (btn_scale.innerText === scale_txt2) btn_scale.innerText = scale_txt1;
+b_move.onclick = function move() {
+    count_move += 1.0;
+    b_center.disabled = false;
+    m_matrix.translate(move_x, move_y, 0);
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
 }
 
-function rotate_click() {
-    if (btn_rotate.innerText === rot_txt1) btn_rotate.innerText = rot_txt2;
-    else if (btn_rotate.innerText === rot_txt2) btn_rotate.innerText = rot_txt1;
+b_center.onclick = function center() {
+    count_move = 0.0;
+    b_center.disabled = true;
+    update_matrix();
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
 }
 
-function animate_click() {
-    if (btn_animate.innerText === anim_txt1) {
-        btn_animate.innerText = anim_txt2;
-        btn_move.disabled = true;
-        btn_scale.disabled = true;
-        btn_rotate.disabled = true;
-    } else if (btn_animate.innerText === anim_txt2) {
-        btn_animate.innerText = anim_txt1;
-        btn_move.disabled = false;
-        btn_scale.disabled = false;
-        btn_rotate.disabled = false;
+b_scale.onclick = function scale() {
+    count_scale += 1.0;
+    b_resize.disabled = false;
+    m_matrix.scale(SCALE, SCALE, 0);
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
+}
+
+b_resize.onclick = function unscale() {
+    count_scale = 0.0;
+    b_resize.disabled = true;
+    update_matrix();
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
+}
+
+b_rotate.onclick = function rotate() {
+    count_rot += 1.0;
+    b_zero.disabled = false;
+    update_matrix();
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
+}
+
+b_zero.onclick = function zero() {
+    count_rot = 0.0;
+    b_zero.disabled = true;
+    update_matrix();
+    update_canvas(wgl_ctx, a_position, POINTS, u_matrix, m_matrix);
+}
+
+b_anim.onclick = function animate() {
+    if (b_anim.innerText === ANIM_TXT1) {
+        b_anim.innerText = ANIM_TXT2;
+        b_move.disabled = true;
+        b_scale.disabled = true;
+        b_rotate.disabled = true;
+    } else if (b_anim.innerText === ANIM_TXT2) {
+        b_anim.innerText = ANIM_TXT1;
+        b_move.disabled = false;
+        b_scale.disabled = false;
+        b_rotate.disabled = false;
     }
 }
