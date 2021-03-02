@@ -1,0 +1,52 @@
+<!--Maggie Horton - Graphics Assignment 5 Winter 2021-->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Assignment 5</title>
+        <style>
+            canvas {
+                display: inline;
+                margin-left: 40px;
+                margin-right: 40px;
+                margin-top: 20px;
+                border: #002c53 solid 4px;
+                border-radius: 20px;
+            }
+            
+            div {
+                width: 100%;
+                text-align: center;
+                margin-top: 20px;
+            }
+            
+            button {
+                background-color: #002c53;
+                border-radius: 15px;
+                color: #d9d9d9;
+                width: 10em;
+                height: 3em;
+                font-family: "Fira Code", monospace;
+            }
+            
+            button:disabled {
+                background-color: #959595;
+                font-style: italic;
+            }
+        </style>
+    </head>
+    
+    <body onload="main()">
+        <h3 id="test_txt"></h3>
+        <div>
+            <canvas id="wgl_canvas" width="600" height="600">CANVAS ERR</canvas>
+        </div>
+        <script src="lib/outside_sources/webgl-utils.js"></script>
+        <script src="lib/outside_sources/webgl-debug.js"></script>
+        <script src="lib/outside_sources/cuon-utils.js"></script>
+        <script src="lib/outside_sources/cuon-matrix.js"></script>
+        <script src="lib/a5-util.js"></script>
+        <script src="lib/a5.js"></script>
+    
+    </body>
+</html>
