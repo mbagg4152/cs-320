@@ -1,19 +1,5 @@
 // Maggie Horton - Graphics Assignment 4 Winter 2021
-function init_vbuff(gl, verts, attr_pos) { // set up vertex buffer for webgl
-    let vert_buff;
-    try {
-        vert_buff = gl.createBuffer();
-    } catch (e) {
-        clog('failed making vbuff');
-        return -1;
-    }
-    gl.bindBuffer(gl.ARRAY_BUFFER, vert_buff);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
-    try { attr_pos = gl.getAttribLocation(gl.program, 'a_pos'); } catch (e) { clog('POS ERR\n' + e);}
-    gl.vertexAttribPointer(attr_pos, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(attr_pos);
-    return verts.length/2;
-}
+
 
 function update_canvas(gl, pos_loc, points, u_matrix, m_matrix) { // update canvas w/ points and transformation matrix
     gl.clearColor(1, 1, 1, 1);
