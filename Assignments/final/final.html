@@ -1,0 +1,53 @@
+<!--Maggie Horton - Graphics Final Winter 2021-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Final</title>
+    <style>
+        canvas {
+            display: inline;
+            margin-top: 20px;
+        }
+
+        div {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            margin-left: 100px;
+            margin-right: 100px;
+            border-radius: 15px;
+            color: #d9d9d9;
+            width: 10em;
+            height: 3em;
+            font-family: "Fira Code", monospace;
+            background-color: #ca0329;
+        }
+
+        button:disabled {
+            background-color: #959595;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body onload="main()">
+<h3 id="test_txt"></h3>
+<div>
+    <button id="b_animate">Start Animation</button>
+    <button id="b_animate2">Stop Animation</button>
+</div>
+<div>
+    <canvas id="wgl_canvas" width="800" height="800">CANVAS ERR</canvas>
+</div>
+<script src="lib/outside_sources/webgl-utils.js"></script>
+<script src="lib/outside_sources/webgl-debug.js"></script>
+<script src="lib/outside_sources/cuon-utils.js"></script>
+<script src="lib/outside_sources/cuon-matrix.js"></script>
+<script src="lib/final.js"></script>
+
+</body>
+</html>
