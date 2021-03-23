@@ -2,7 +2,7 @@
 const SRC_VERT = 'attribute vec4 a_pos; uniform mat4 u_matrix; void main() { gl_Position = u_matrix*a_pos; }';
 const FRAG_BASIC = 'precision mediump float; uniform vec4 u_col;  void main() { gl_FragColor = u_col; }';
 const POINTS = [0.3, 0.6, 0.0, 0.0, 0.6, 0.0, -0.3, 0.0, -0.6, -0.6, 0.0, -0.6];
-const color = vec4('#00447d'), ANIM_ANGLE = 1.0;
+const color = vec4('#5f024b'), ANIM_ANGLE = 1.0;
 let canvas = elem('wgl_canvas'), b_start = elem('b_animate'), b_stop = elem('b_animate2');
 let a_pos, anim_timer = 0, count_rot = 0.0, gl1, m_mat1, req_id, u_col, u_mat, v_count;
 
